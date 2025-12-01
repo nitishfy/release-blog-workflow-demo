@@ -17,29 +17,25 @@ jobs:
         run: |
             MINOR=3.2
             echo "minor=$MINOR" >> $GITHUB_OUTPUT
-
       - name: Fetch Medium RSS feed
         id: medium
         run: |
-          TAG="argo-cd-${{ steps.version.outputs.minor }}"
           FEED_URL="https://medium.com/feed/argo-project/tagged/cicd"
-
           echo "Checking feed: $FEED_URL"
 
           curl -s "$FEED_URL" > feed.xml
 
           # Extract first <link> inside <item>
-          BLOG_URL=$(xmllint --xpath "string(//item/link)" feed.xml 2>/dev/null || true)
+          BLOG_URL=$(grep -oP '<item>.*?<link>\K[^<]+' feed.xml | head -n 1 || true)
 
-          if [ -z "$BLOG_URL" ]; then
+          if [ -z "$BLOG_URL" ]; then`
             echo "No post found yet. Exiting."
             echo "blog_url=" >> $GITHUB_OUTPUT
             exit 0
           fi
-          
+
           echo "Found blog URL: $BLOG_URL"
           echo "blog_url=$BLOG_URL" >> $GITHUB_OUTPUT
-
       - name: Stop if blog does not exist yet
         if: steps.medium.outputs.blog_url == ''
         run: echo "Blog not available yet — skipping PR."
