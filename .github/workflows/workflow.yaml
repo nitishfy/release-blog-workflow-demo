@@ -15,11 +15,11 @@ jobs:
       - name: Determine current minor version
         id: version
         run: |
-            git clone github.com/argoproj/argo-cd.git
+            # git clone github.com/argoproj/argo-cd.git
             TAG=$(git tag --sort=-creatordate | head -n 1)
             CLEAN=${TAG#v}
             MINOR=$(echo "$CLEAN" | cut -d. -f1,2)
-            echo "minor=$MINOR" >> $GITHUB_OUTPUT
+            echo "minor=3.2" >> $GITHUB_OUTPUT
 
       - name: Fetch Medium RSS feed
         id: medium
